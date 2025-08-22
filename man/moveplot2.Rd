@@ -33,7 +33,8 @@ moveplot2(
 \item{reflect}{a character vector specifying the axis of reflection to apply at each corresponding time point in align.time. One of FALSE (default), "x" for reflection about the x-axis, "y" for reflection about the y-axis and "xy" for reflection about both axes.}
 }
 \value{
-An animated or a facet of biplots based on the dynamic frame.
+\item{bp}{Returns the elements of the biplot object \code{bp} from \code{biplotEZ}.}
+\item{plot}{An animated or a facet of biplots based on the dynamic frame.}
 }
 \description{
 Create animated biplot on samples and variables in a biplot

@@ -81,30 +81,3 @@ axes_moveEZ <- function(bp,which.var)
   retvals <- list(coords = axis.points, a = intercept, b = slope, v = v)
   return(retvals)
 }
-
-# -----------------------------------------------------------------------------------------------------
-#' Reflect the biplot about a chosen axis
-#'
-#' @description
-#' This function provides the user with an option to reflect the biplot horizontally, vertically or diagonally.
-#'
-#' @param bp an object of class \code{biplot}
-#' @param reflect.axis a character string indicating which axis about to reflect. One of \code{FALSE} (default), "\code{x}" for reflection about the x-axis, "\code{y}" for reflection about the y-axis and "\code{xy}" for reflection about both axes.
-#'
-#' @returns An object of class \code{biplot}
-#'
-#'
-reflect_biplot <- function(bp,reflect.axis = c("FALSE","x","y","xy"))
-{
-  relect.axis <- reflect.axis[1]
-  reflect.mat <- diag(bp$dim.biplot)
-  if (relect.axis == "x" & bp$dim.biplot == 2) reflect.mat[1, 1] <- -1
-  if (relect.axis == "y" & bp$dim.biplot == 2) reflect.mat[2, 2] <- -1
-  if (relect.axis == "xy" & bp$ dim.biplot == 2) reflect.mat[1:2, 1:2] <- diag(-1, 2)
-
-  bp$Z <- bp$Z %*% reflect.mat
-  bp$Vr <- bp$Vr %*% reflect.mat
-
-  bp
-}
-

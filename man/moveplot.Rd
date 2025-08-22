@@ -20,7 +20,8 @@ moveplot(bp, time.var, group.var, move = TRUE, hulls = TRUE, scale.var = 5)
 \item{scale.var}{scaling the vectors representing the variables}
 }
 \value{
-An animated or a facet of biplots based on the fixed variable frame.
+\item{bp}{Returns the elements of the biplot object \code{bp} from \code{biplotEZ}.}
+\item{plot}{An animated or a facet of biplots based on the dynamic frame.}
 }
 \description{
 Create animated biplot on samples in a biplot

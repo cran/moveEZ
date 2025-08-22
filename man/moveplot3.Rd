@@ -30,7 +30,11 @@ moveplot3(
 \item{target}{Target data set to which all biplots should be matched consisting of the the same dimensions. If not specified, the centroid of all available biplot sample coordinates from \code{time.var} will be used. Default \code{NULL}.}
 }
 \value{
-An animated or a facet of biplots based on the dynamic frame.
+\item{bp}{Returns the elements of the biplot object \code{bp} from \code{biplotEZ}.}
+\item{iter_levels}{The levels of the time variable.}
+\item{coord_set}{The coordinates of the configurations before applying Generalised Orthogonal Procrustes Analysis.}
+\item{GPA_list}{The coordinates of the configurations after applying Generalised Orthogonal Procrustes Analysis.}
+\item{plot}{An animated or a facet of biplots based on the dynamic frame.}
 }
 \description{
 Create animated biplot on samples and variables in a biplot with a given target

@@ -4,6 +4,7 @@ output:
   rmarkdown::html_vignette:
     toc: true
     number_sections: true
+bibliography: references.bib
 vignette: >
   %\VignetteIndexEntry{moveEZ}
   %\VignetteEngine{knitr::rmarkdown}
@@ -19,10 +20,10 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup, include=FALSE}
-library(moveEZ) ; library(tibble) ; library(scales); library(gganimate)
+library(moveEZ); library(tibble); library(scales); library(gganimate)
 ```
 
-Consider a dataset ${\bf{X}}$ comprising $n$ observations and $p$ continuous variables, along with an additional variable representing "time". This time variable need not correspond to chronological time; it could just as well represent another form of ordered index, such as algorithmic iterations or experimental stages.
+Consider a dataset ${\mathbf{X}}$ comprising $n$ observations and $p$ continuous variables, along with an additional variable representing "time". This time variable need not correspond to chronological time; it could just as well represent another form of ordered index, such as algorithmic iterations or experimental stages.
 
 A natural approach is to construct separate biplots for each level of the time variable, enabling the user to explore how samples and variable relationships evolve across time. However, when the time variable includes many levels, this quickly results in an overwhelming number of biplots.
 
@@ -30,7 +31,7 @@ This package addresses that challenge by animating a single biplot across the le
 
 The animation of the biplots—currently limited to PCA biplots—is based on two conceptual frameworks:
 
-1.  Fixed Variable Frame `moveplot()`: A biplot is first constructed using the full dataset ${\bf{X}}$, and the animation is achieved by slicing the observations according to the "time" variable. In this approach, the variable axes remain fixed, and only the sample points are animated over time.
+1.  Fixed Variable Frame `moveplot()`: A biplot is first constructed using the full dataset ${\mathbf{X}}$, and the animation is achieved by slicing the observations according to the "time" variable. In this approach, the variable axes remain fixed, and only the sample points are animated over time.
 
 2.  Dynamic Frame `moveplot2()` and `moveplot3()`: Separate biplots are constructed for each time slice of the data. Both the sample points and variable axes evolve over time, resulting in a fully dynamic animation that reflects temporal changes in the underlying data structure. The differences between these functions are highlighted in the subsequent sections.
 
@@ -42,7 +43,7 @@ data("Africa_climate")
 tibble::tibble(Africa_climate)
 ```
 
-We begin by constructing a standard PCA biplot using the `biplotEZ` package. This biplot aggregates all samples across time and colours them according to their associated region:
+We begin by constructing a standard PCA biplot using the `biplotEZ` package (@biplotEZ). This biplot aggregates all samples across time and colours them according to their associated region:
 
 ```{r, message=FALSE}
 library(biplotEZ)
@@ -74,8 +75,12 @@ bp |> moveplot(time.var = "Year", group.var = "Region", hulls = TRUE, move = FAL
 
 ## Animation: `move = TRUE`
 
-```{r,warning=FALSE, message=FALSE}
-bp |> moveplot(time.var = "Year", group.var = "Region", hulls = TRUE, move = TRUE)
+![](anim1.gif)
+
+```{r,echo=FALSE,eval = FALSE,warning=FALSE, message=FALSE}
+anim1 <- bp |> moveplot(time.var = "Year", group.var = "Region", hulls = TRUE, move = TRUE)
+anim_rendered <- animate(anim1, renderer = gifski_renderer(), nframes = 100, fps = 10)
+anim_save("vignettes/anim1.gif", animation = anim_rendered)
 ```
 
 # Dynamic Frame `moveplot2()`
@@ -94,10 +99,15 @@ There is a noticeable discontinuity in the transition from the year 1950 to 1960
 
 ## Animated: `move = TRUE`
 
-```{r,warning=FALSE, message=FALSE}
-bp |> moveplot2(time.var = "Year", group.var = "Region", hulls = TRUE, move = TRUE,
+![](anim2.gif)
+
+```{r,echo=FALSE,eval = FALSE,warning=FALSE, message=FALSE}
+anim2 <- bp |> moveplot2(time.var = "Year", group.var = "Region", hulls = TRUE, move = TRUE,
                 align.time = "1950", reflect = "x")
+anim_rendered <- animate(anim2, renderer = gifski_renderer(), nframes = 100, fps = 10)
+anim_save("vignettes/anim2.gif", animation = anim_rendered)
 ```
+
 
 Setting `move` to TRUE produces an animated biplot in which both the samples and variables transition across time, offering a dynamic view of structural shifts in the multivariate space.
 
@@ -113,7 +123,7 @@ And of course, both `align.time` and `reflect` can be vectors when alignment is 
 
 # Dynamic frame with alignment to a `target` with `moveplot3()`
 
-This function shares the same arguments as `moveplot()` and `moveplot2()`, with the addition of the `target` argument. `moveplot3()` utilises Generalised Orthogonal Procrustes Analysis (GPA) to align sample points and variable axes to either a specified target (for example: same measurements at a different time point) or to a centroid coordinate matrix representing all sample points and axes across time slices (`target = NULL`). GPA is applied by using the `GPAbin` package and makes use of admissible transformations (translation, scaling, rotation and reflection) to optimally align configurations, while preserving the distances between coordinates. As with `moveplot2()` the `move` argument determines whether the animations of changing sample points and variables axes are shown or presented as static facets.
+This function shares the same arguments as `moveplot()` and `moveplot2()`, with the addition of the `target` argument. `moveplot3()` utilises Generalised Orthogonal Procrustes Analysis (GPA) (@Proc) to align sample points and variable axes to either a specified target (for example: same measurements at a different time point) or to a centroid coordinate matrix representing all sample points and axes across time slices (`target = NULL`). GPA is applied by using the `GPAbin` package and makes use of admissible transformations (translation, scaling, rotation and reflection) to optimally align configurations, while preserving the distances between coordinates. As with `moveplot2()` the `move` argument determines whether the animations of changing sample points and variables axes are shown or presented as static facets.
 
 To illustrate the use of a fixed target, we use the year 1989 from the `Africa_climate` data set, which consists of the same variables and number of observations:
 
@@ -142,21 +152,66 @@ Now, the separate biplots per `time.var` are transformed and aligned to the samp
 
 ## Animated: `move = TRUE` and `target = NULL`
 
-```{r,warning=FALSE, message=FALSE}
-bp |> moveplot3(time.var = "Year", group.var = "Region", hulls = TRUE, move = TRUE, 
+![](anim3.gif)
+
+```{r,echo=FALSE,eval = FALSE,warning=FALSE, message=FALSE}
+anim3 <- bp |> moveplot3(time.var = "Year", group.var = "Region", hulls = TRUE, move = TRUE, 
                 target = NULL)
+anim_rendered <- animate(anim3, renderer = gifski_renderer(), nframes = 100, fps = 10)
+anim_save("vignettes/anim3.gif", animation = anim_rendered)
 ```
 
 Here the animated view of the biplots over time are illustrated after aligning the visualisation to the centroid configuration.
 
 ## Animated: `move = TRUE` and `target = Africa_climate_target`
 
-```{r,warning=FALSE, message=FALSE}
-bp |> moveplot3(time.var = "Year", group.var = "Region", hulls = TRUE, move = TRUE, 
+![](anim4.gif)
+
+```{r,echo=FALSE,eval = FALSE,warning=FALSE, message=FALSE}
+anim4 <- bp |> moveplot3(time.var = "Year", group.var = "Region", hulls = TRUE, move = TRUE, 
                 target = Africa_climate_target)
+anim_rendered <- animate(anim4, renderer = gifski_renderer(), nframes = 100, fps = 10)
+anim_save("vignettes/anim4.gif", animation = anim_rendered)
 ```
 
 Finally, the animated biplots illustrate the transformations towards a specified target dataset.  Again, the focus is on the movement that changes between the variables and sample representation as the target is set to a specific year compared to the movement observed in the previous example where `target = NULL`. Therefore, these animations expose the *jumps* that occur from 1989 to each of the years in `Africa_climate` from 1950 to 2020 (in increments of 10 years).
+
+# Evaluation
+
+This function can only be used in conjunction with `moveplot3()`. Five measures of comparison are calculated to establish the differences between each individual biplot and the chosen `target` configuration as specified in `moveplot3()`. The measures are based on Orthogonal Procrustes analysis between the target and the specific individual biplot. There are three bias related measures: Absolute Mean Bias (AMB), Mean Bias (MB) and the Root Mean Squared Bias (RMSB). There are two fit measures: Procrustes Statistic (PS) and Congruence Coefficient (CC). For more information on these metrics refer to @GPAbinart.
+
+The evaluation measures can be extracted as follows:
+
+```{r,message=FALSE}
+results <- bp |> moveplot3(time.var = "Year", group.var = "Region", hulls = TRUE, 
+                           move = FALSE, target = NULL) |> evaluation()
+```
+
+```{r}
+results$eval.list
+```
+
+To ease interpretation, especially when there is a large number of time points, separate line plots are available for the fit and bias measures.
+
+## The fit measures
+
+The Procrustes Statistics(PS) and Congruence Coefficient (CC) is bounded by zero and one. A small PS value (close to zero) and a large CC value (close to one) indicate good fit. These measures express the magnitude of changes that has to be made for a particular biplot to match the target visualisation. Therefore, they measure how *close* the coordinates of the two configurations are.
+
+```{r, warning=FALSE}
+results$fit.plot
+```
+
+The line plot shows that the biplot of 2000 results in a lower CC and larger PS value compared to the other years. This means that there is a noticeable difference between the year 2000 and the average across years and the measurements of 2000 should be investigated in more detail to understand the cause of this difference.
+
+## The bias measures
+
+Low values for the Absolute Mean Bias (AMB), Mean Bias (MB) and the Root Mean Squared Bias (RMSB) reflect unbiased representation between a biplot and the target it is being matched to.
+
+```{r, warning=FALSE}
+results$bias.plot
+```
+
+The line plot shows that the initial bias is high, but decreases and stabilises from 1960 with an increase in both the AMB and RMSB occurring for 2000. This is in agreement with the fit measures. The MB stays constant and close to zero for all comparisons.
 
 # Still to Come!
 
@@ -164,3 +219,4 @@ We are actively working to develop and enhance the dynamic plotting capabilities
 
 Stay tuned for updates!
 
+# References

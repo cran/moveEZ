@@ -9,7 +9,10 @@
 #' @param hulls whether to display sample points or convex hulls
 #' @param scale.var scaling the vectors representing the variables
 #'
-#' @returns An animated or a facet of biplots based on the fixed variable frame.
+#' @returns
+#' \item{bp}{Returns the elements of the biplot object \code{bp} from \code{biplotEZ}.}
+#' \item{plot}{An animated or a facet of biplots based on the dynamic frame.}
+#'
 #' @export
 #'
 #' @examples
@@ -20,7 +23,8 @@
 #' \donttest{
 #' if(interactive()) {
 #' bp |> moveplot(time.var = "Year", group.var = "Region", hulls = TRUE, move = TRUE)}}
-moveplot <- function(bp, time.var, group.var, move = TRUE, hulls = TRUE, scale.var = 5)
+moveplot <- function(bp, time.var, group.var, move = TRUE, hulls = TRUE,
+                     scale.var = 5)
 {
 
   if(!is.null(group.var)) bp$group.aes <- bp$raw.X[,which(colnames(bp$raw.X) == group.var)] else
@@ -90,7 +94,7 @@ moveplot <- function(bp, time.var, group.var, move = TRUE, hulls = TRUE, scale.v
 
   # move – TRUE --- Animated sliced Z
   # move – FALSE  --- Facet on sliced Z
-    ggplot() +
+  bp$plot <- ggplot() +
       # Axes
       geom_segment(data=Vr_tbl,aes(x=0,y=0,xend=V1*scale.var,yend=V2*scale.var,group=var),
                    arrow=arrow(length=unit(0.1,"inches"))) +
@@ -120,9 +124,12 @@ moveplot <- function(bp, time.var, group.var, move = TRUE, hulls = TRUE, scale.v
       theme_classic() +
       theme(axis.ticks = element_blank(),
             axis.text.x = element_blank(),
-            axis.text.y = element_blank())
+            axis.text.y = element_blank(),
+            axis.title.x = element_blank(),
+            axis.title.y = element_blank())
 
-
+  print(bp$plot)
+  bp
 }
 
 
@@ -139,7 +146,10 @@ moveplot <- function(bp, time.var, group.var, move = TRUE, hulls = TRUE, scale.v
 #' @param align.time a vector specifying the levels of time.var for which the biplots should be aligned. Only biplots corresponding to these time points will be used to compute the alignment transformation.
 #' @param reflect a character vector specifying the axis of reflection to apply at each corresponding time point in align.time. One of FALSE (default), "x" for reflection about the x-axis, "y" for reflection about the y-axis and "xy" for reflection about both axes.
 #'
-#' @returns An animated or a facet of biplots based on the dynamic frame.
+#' @returns
+#' \item{bp}{Returns the elements of the biplot object \code{bp} from \code{biplotEZ}.}
+#' \item{plot}{An animated or a facet of biplots based on the dynamic frame.}
+#'
 #' @export
 #'
 #' @examples
@@ -203,7 +213,7 @@ moveplot2 <- function(bp, time.var, group.var, move = TRUE, hulls = TRUE, scale.
 
     # if(i == any(align_levels)) bp_list[[i]] <- bp_list[[i]] |> reflect_biplot(reflect.axis = reflect[i])
 
-    if (i %in% align_levels) bp_list[[i]] <- bp_list[[i]] |> reflect_biplot(reflect.axis = reflect[which(align_levels == i)])
+    if (i %in% align_levels) bp_list[[i]] <- bp_list[[i]] |> biplotEZ::reflect(reflect.axis = reflect[which(align_levels == i)])
 
     colnames(bp_list[[i]]$Z) <- c("V1","V2")
     Z_list[[i]] <- dplyr::as_tibble(bp_list[[i]]$Z)
@@ -243,7 +253,7 @@ moveplot2 <- function(bp, time.var, group.var, move = TRUE, hulls = TRUE, scale.
   # Move – FALSE Facet separate Z,V
   if(move==TRUE)
   {
-    ggplot() +
+    bp$plot <- ggplot() +
       # Axes
       geom_segment(data=Vr_tbl,aes(x=0,y=0,xend=V1*scale.var,yend=V2*scale.var,group=var),
                    arrow=arrow(length=unit(0.1,"inches"))) +
@@ -275,11 +285,13 @@ moveplot2 <- function(bp, time.var, group.var, move = TRUE, hulls = TRUE, scale.
       theme_classic() +
       theme(axis.ticks = element_blank(),
             axis.text.x = element_blank(),
-            axis.text.y = element_blank())
+            axis.text.y = element_blank(),
+            axis.title.x = element_blank(),
+            axis.title.y = element_blank())
 
   } else {
 
-    ggplot() +
+    bp$plot <- ggplot() +
       # Axes
       geom_segment(data=Vr_tbl,aes(x=0,y=0,xend=V1*scale.var,yend=V2*scale.var,group=var),
                    arrow=arrow(length=unit(0.1,"inches"))) +
@@ -304,10 +316,13 @@ moveplot2 <- function(bp, time.var, group.var, move = TRUE, hulls = TRUE, scale.
       theme_classic() +
       theme(axis.ticks = element_blank(),
             axis.text.x = element_blank(),
-            axis.text.y = element_blank())
+            axis.text.y = element_blank(),
+            axis.title.x = element_blank(),
+            axis.title.y = element_blank())
 
   }
-
+    print(bp$plot)
+    bp
 }
 
 #' Move plot 3
@@ -322,7 +337,13 @@ moveplot2 <- function(bp, time.var, group.var, move = TRUE, hulls = TRUE, scale.
 #' @param scale.var scaling the vectors representing the variables
 #' @param target Target data set to which all biplots should be matched consisting of the the same dimensions. If not specified, the centroid of all available biplot sample coordinates from \code{time.var} will be used. Default `NULL`.
 #'
-#' @returns An animated or a facet of biplots based on the dynamic frame.
+#' @returns
+#' \item{bp}{Returns the elements of the biplot object \code{bp} from \code{biplotEZ}.}
+#' \item{iter_levels}{The levels of the time variable.}
+#' \item{coord_set}{The coordinates of the configurations before applying Generalised Orthogonal Procrustes Analysis.}
+#' \item{GPA_list}{The coordinates of the configurations after applying Generalised Orthogonal Procrustes Analysis.}
+#' \item{plot}{An animated or a facet of biplots based on the dynamic frame.}
+#'
 #' @export
 #'
 #' @examples
@@ -349,6 +370,8 @@ moveplot3 <- function(bp, time.var, group.var, move = TRUE, hulls = TRUE,
 
   iterations <- nlevels(bp$raw.X[[tvi]])
   iter_levels <- levels(bp$raw.X[[tvi]])
+
+  bp$iter_levels <- iter_levels
 
   group_levels <- levels(bp$raw.X[[gvi]])
 
@@ -412,6 +435,7 @@ moveplot3 <- function(bp, time.var, group.var, move = TRUE, hulls = TRUE,
     Vr_temp <- Vr_tbl |> dplyr::filter(Vr_tbl[[tviGVr]] == iter_levels[i])
     coord_set[[i]] <- dplyr::bind_rows(Z_temp[c("V1","V2")], Vr_temp[c("V1","V2")])
   }
+
   # determine sizes after final coord_set
   Z_split <- nrow(Z_temp)
   Vr_split <- nrow(Vr_temp)
@@ -432,6 +456,10 @@ moveplot3 <- function(bp, time.var, group.var, move = TRUE, hulls = TRUE,
   # translation not used, since biplots are centred
   GPA_list <- GPA.out[[1]]
 
+  bp$G.target <- G.target
+  bp$coord_set <- coord_set
+  bp$GPA_list <- GPA_list
+
   Z_GPA_list <- vector("list", iterations)
   Vr_GPA_list <- vector("list", iterations)
   chull_reg <- vector("list", iterations)
@@ -439,6 +467,7 @@ moveplot3 <- function(bp, time.var, group.var, move = TRUE, hulls = TRUE,
   # now bind_rows() of Z_GPA_list and Vr_GPA_list and adding columns of Z_tbl and Vr_tbl
   for (i in 1:iterations)
   {
+    colnames(GPA_list[[i]]) <- c("V1","V2")
     Z_GPA_list[[i]] <- dplyr::as_tibble(GPA_list[[i]][1:Z_split,])
     Z_GPA_list[[i]] <- suppressMessages(dplyr::bind_cols(Z_GPA_list[[i]], bp_list[[i]]$Xcat))
     Vr_GPA_list[[i]] <- dplyr::as_tibble(GPA_list[[i]][((Z_split+1):t_rows),])
@@ -468,7 +497,7 @@ moveplot3 <- function(bp, time.var, group.var, move = TRUE, hulls = TRUE,
   # Move – FALSE Facet separate Z,V
   if(move==TRUE)
   {
-    ggplot() +
+    bp$plot <- ggplot() +
       # Axes
       geom_segment(data=Vr_GPA_tbl, aes(x=0, y=0, xend=V1*scale.var, yend=V2*scale.var, group=var),
                    arrow=arrow(length=unit(0.1,"inches"))) +
@@ -500,11 +529,13 @@ moveplot3 <- function(bp, time.var, group.var, move = TRUE, hulls = TRUE,
       theme_classic() +
       theme(axis.ticks = element_blank(),
             axis.text.x = element_blank(),
-            axis.text.y = element_blank())
+            axis.text.y = element_blank(),
+            axis.title.x = element_blank(),
+            axis.title.y = element_blank())
 
   } else {
 
-    ggplot() +
+    bp$plot <- ggplot() +
       # Axes
       geom_segment(data=Vr_GPA_tbl,aes(x=0,y=0,xend=V1*scale.var,yend=V2*scale.var,group=var),
                    arrow=arrow(length=unit(0.1,"inches"))) +
@@ -529,8 +560,12 @@ moveplot3 <- function(bp, time.var, group.var, move = TRUE, hulls = TRUE,
       theme_classic() +
       theme(axis.ticks = element_blank(),
             axis.text.x = element_blank(),
-            axis.text.y = element_blank())
-
+            axis.text.y = element_blank(),
+            axis.title.x = element_blank(),
+            axis.title.y = element_blank())
   }
-
+  class(bp) <- append(class(bp), "moveplot3")
+  print(bp$plot)
+  bp
 }
+
