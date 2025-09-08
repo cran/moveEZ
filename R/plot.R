@@ -8,6 +8,7 @@
 #' @param move whether to animate (TRUE) or facet (FALSE) samples, according to time.var
 #' @param hulls whether to display sample points or convex hulls
 #' @param scale.var scaling the vectors representing the variables
+#' @param shadow whether the animation will keep past states (only when hulls = FALSE)
 #'
 #' @returns
 #' \item{bp}{Returns the elements of the biplot object \code{bp} from \code{biplotEZ}.}
@@ -24,7 +25,7 @@
 #' if(interactive()) {
 #' bp |> moveplot(time.var = "Year", group.var = "Region", hulls = TRUE, move = TRUE)}}
 moveplot <- function(bp, time.var, group.var, move = TRUE, hulls = TRUE,
-                     scale.var = 5)
+                     scale.var = 5,shadow=FALSE)
 {
 
   if(!is.null(group.var)) bp$group.aes <- bp$raw.X[,which(colnames(bp$raw.X) == group.var)] else
@@ -44,22 +45,6 @@ moveplot <- function(bp, time.var, group.var, move = TRUE, hulls = TRUE,
   Z <- suppressMessages(dplyr::bind_cols(Z, bp$Xcat))
   colnames(Z)[1:2] <- c("V1","V2")
   Z_tbl <- dplyr::as_tibble(Z)
-
-  # Set limits
-  # xlim
-  minx <- min(Z_tbl$V1)
-  maxx <- max(Z_tbl$V1)
-  range_x <- maxx - minx
-
-  # ylim
-  miny <- min(Z_tbl$V2)
-  maxy <- max(Z_tbl$V2)
-  range_y <- maxy - miny
-
-  perc <- 20/100
-  xlim <- c(minx - perc*range_x,maxx + perc*range_x)
-  ylim <- c(miny - perc*range_y,maxy + perc*range_y)
-
 
   axes_info <- axes_moveEZ(bp)
   Vr <- bp$Vr
@@ -119,16 +104,20 @@ moveplot <- function(bp, time.var, group.var, move = TRUE, hulls = TRUE,
                                      state_length = 1) } else {
                                        facet_wrap(~.data[[time.var]]) }} +
       {if(move) { labs(title = '{time.var}: {closest_state}',x="",y="")}} +
-      xlim(xlim) +
-      ylim(ylim) +
+      {if(!hulls & shadow) { gganimate::shadow_mark(alpha=0.3) }} +
+      ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = 0.2)) +
+      ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = 0.2)) +
       theme_classic() +
       theme(axis.ticks = element_blank(),
             axis.text.x = element_blank(),
             axis.text.y = element_blank(),
             axis.title.x = element_blank(),
-            axis.title.y = element_blank())
+            axis.title.y = element_blank(),
+            plot.title = ggplot2::element_text(size=30,face ="bold") )
 
-  print(bp$plot)
+  if(move==TRUE)
+    print(gganimate::animate(bp$plot,duration = 15,fps=10)) else
+      print(bp$plot)
   bp
 }
 
@@ -280,14 +269,17 @@ moveplot2 <- function(bp, time.var, group.var, move = TRUE, hulls = TRUE, scale.
                         transition_length = 2,
                         state_length = 1) +
       labs(title = '{time.var}: {closest_state}',x="",y="") +
-      xlim(xlim) +
-      ylim(ylim) +
+      #xlim(xlim) +
+      #ylim(ylim) +
+      ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = 0.2)) +
+      ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = 0.2)) +
       theme_classic() +
       theme(axis.ticks = element_blank(),
             axis.text.x = element_blank(),
             axis.text.y = element_blank(),
             axis.title.x = element_blank(),
-            axis.title.y = element_blank())
+            axis.title.y = element_blank(),
+            plot.title = ggplot2::element_text(size=30,face ="bold"))
 
   } else {
 
@@ -311,8 +303,10 @@ moveplot2 <- function(bp, time.var, group.var, move = TRUE, hulls = TRUE, scale.
                        fill =.data[[group.var]],
                        colour = .data[[group.var]]),size=2, alpha=0.8)
       }} + facet_wrap(~.data[[time.var]]) +
-      xlim(xlim) +
-      ylim(ylim) +
+      #xlim(xlim) +
+      #ylim(ylim) +
+      ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = 0.2)) +
+      ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = 0.2)) +
       theme_classic() +
       theme(axis.ticks = element_blank(),
             axis.text.x = element_blank(),
@@ -321,8 +315,11 @@ moveplot2 <- function(bp, time.var, group.var, move = TRUE, hulls = TRUE, scale.
             axis.title.y = element_blank())
 
   }
-    print(bp$plot)
-    bp
+
+  if(move==TRUE)
+    print(gganimate::animate(bp$plot,duration = 15,fps=10)) else
+      print(bp$plot)
+  bp
 }
 
 #' Move plot 3
@@ -524,14 +521,17 @@ moveplot3 <- function(bp, time.var, group.var, move = TRUE, hulls = TRUE,
                                    transition_length = 2,
                                    state_length = 1) +
       labs(title = '{time.var}: {closest_state}',x="",y="") +
-      xlim(xlim) +
-      ylim(ylim) +
+      #xlim(xlim) +
+      #ylim(ylim) +
+      ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = 0.2)) +
+      ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = 0.2)) +
       theme_classic() +
       theme(axis.ticks = element_blank(),
             axis.text.x = element_blank(),
             axis.text.y = element_blank(),
             axis.title.x = element_blank(),
-            axis.title.y = element_blank())
+            axis.title.y = element_blank(),
+            plot.title = ggplot2::element_text(size=30,face ="bold"))
 
   } else {
 
@@ -555,8 +555,10 @@ moveplot3 <- function(bp, time.var, group.var, move = TRUE, hulls = TRUE,
                        fill =.data[[group.var]],
                        colour = .data[[group.var]]),size=2, alpha=0.8)
       }} + facet_wrap(~.data[[time.var]]) +
-      xlim(xlim) +
-      ylim(ylim) +
+      #xlim(xlim) +
+      #ylim(ylim) +
+      ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = 0.2)) +
+      ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = 0.2)) +
       theme_classic() +
       theme(axis.ticks = element_blank(),
             axis.text.x = element_blank(),
@@ -565,7 +567,9 @@ moveplot3 <- function(bp, time.var, group.var, move = TRUE, hulls = TRUE,
             axis.title.y = element_blank())
   }
   class(bp) <- append(class(bp), "moveplot3")
-  print(bp$plot)
+  if(move==TRUE)
+    print(gganimate::animate(bp$plot,duration = 15,fps=10)) else
+      print(bp$plot)
   bp
 }
 

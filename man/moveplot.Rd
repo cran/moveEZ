@@ -4,7 +4,15 @@
 \alias{moveplot}
 \title{Move plot}
 \usage{
-moveplot(bp, time.var, group.var, move = TRUE, hulls = TRUE, scale.var = 5)
+moveplot(
+  bp,
+  time.var,
+  group.var,
+  move = TRUE,
+  hulls = TRUE,
+  scale.var = 5,
+  shadow = FALSE
+)
 }
 \arguments{
 \item{bp}{biplot object from biplotEZ}
@@ -18,6 +26,8 @@ moveplot(bp, time.var, group.var, move = TRUE, hulls = TRUE, scale.var = 5)
 \item{hulls}{whether to display sample points or convex hulls}
 
 \item{scale.var}{scaling the vectors representing the variables}
+
+\item{shadow}{whether the animation will keep past states (only when hulls = FALSE)}
 }
 \value{
 \item{bp}{Returns the elements of the biplot object \code{bp} from \code{biplotEZ}.}

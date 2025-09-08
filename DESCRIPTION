@@ -1,6 +1,6 @@
 Package: moveEZ
 Title: Animated Biplots
-Version: 1.1.0
+Version: 1.1.1
 Authors@R: 
     c(person("Raeesa", "Ganey", , "raeesa.ganey@wits.ac.za", role = c("aut", "cre","cph"),
            comment = c(ORCID = "0009-0008-6973-0999")),
@@ -17,11 +17,11 @@ Suggests: testthat, rmarkdown, knitr, tibble, scales
 Config/Needs/website: rmarkdown
 URL: https://muvisu.github.io/moveEZ/
 NeedsCompilation: no
-Packaged: 2025-08-22 12:13:59 UTC; raeesaganey
+Packaged: 2025-09-08 12:36:06 UTC; raeesaganey
 Author: Raeesa Ganey [aut, cre, cph] (ORCID:
     <https://orcid.org/0009-0008-6973-0999>),
   Johané Nienkemper-Swanepoel [aut, cph] (ORCID:
     <https://orcid.org/0000-0001-6086-8272>)
 Maintainer: Raeesa Ganey <raeesa.ganey@wits.ac.za>
 Repository: CRAN
-Date/Publication: 2025-08-22 12:40:09 UTC
+Date/Publication: 2025-09-08 13:40:07 UTC
